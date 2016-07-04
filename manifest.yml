@@ -10,3 +10,5 @@ applications:
   path: .
   instances: 1
   memory: 512MB
+  name: conversation-simple-ramish94-153
+  host: conversation-simple-ramish94-153
