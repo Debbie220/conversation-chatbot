@@ -31,15 +31,17 @@ app.use(bodyParser.json());
 // Create the service wrapper
 var conversation = watson.conversation({
   url: 'https://gateway.watsonplatform.net/conversation-experimental/api',
-  username: process.env.CONVERSATION_USERNAME || '<username>',
-  password: process.env.CONVERSATION_PASSWORD || '<password>',
+  username: process.env.CONVERSATION_USERNAME || '0307ac42-ead5-4ef4-8e46-bd4b4479df6b',
+  password: process.env.CONVERSATION_PASSWORD || 'X4KghNix2imI',
   version_date: '2016-05-19',
   version: 'v1-experimental'
 });
 
+
+
 // Endpoint to be call from the client side
 app.post('/api/message', function(req, res) {
-  var workspace = process.env.WORKSPACE_ID || '<workspace-id>';
+  var workspace = process.env.WORKSPACE_ID || 'cac5193b-c099-4451-a283-299bbb049542';
   if (!workspace || workspace === '<workspace-id>') {
     return res.json({'output': {'text': 'The app has not been configured with a <b>WORKSPACE_ID</b> environment variable. Please refer to the ' +
     '<a href="https://github.com/watson-developer-cloud/conversation-simple">README</a> documentation on how to set this variable. <br>' +
@@ -64,6 +66,7 @@ app.post('/api/message', function(req, res) {
     if (err) {
       return res.status(err.code || 500).json(err);
     }
+    console.log("DATA: ", data);
     return res.json(updateMessage(data));
   });
 });
@@ -80,6 +83,11 @@ function updateMessage(response) {
     if (!response.output) {
       response.output = {};
     }
+
+    //for the equipment rental form
+    if(response.output.variables){
+
+    }
     // Depending on the confidence of the response the app can return different messages.
     // The confidence will vary depending on how well the system is trained. The service will always try to assign
     // a class/intent to the input. If the confidence is low, then it suggests the service is unsure of the
@@ -93,7 +101,7 @@ function updateMessage(response) {
       responseText = 'I did not understand your intent';
     }
   }
-  response.output.text = responseText;
+  //response.output.text = responseText;
   return response;
 }
 
