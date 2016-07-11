@@ -23,7 +23,6 @@ var bodyParser = require('body-parser');  // parser for post requests
 var watson = require('watson-developer-cloud');  // watson sdk
 
 var app = express();
-var role=null;
 // Bootstrap application settings
 app.use(express.static('./public')); // load UI from public folder
 app.use(bodyParser.json());
@@ -82,12 +81,13 @@ function updateMessage(response) {
     if (!response.output) {
       response.output = {};
     }
+    //saving the role as a context variable
+    if(response.output.role){
+      response.context.role = response.output.role;
+    }
 
-    // if(response.output.role){
-    //   role = response.output.role;
-    // }
+    //this will not work if the location of the alternative nodes where the intents are checked for is moved
     if(response.context.system.dialog_stack[0] == "root"){
-      console.log("YESY");
       response.context.system.dialog_stack[0] = "node_5_1467908868729";
     }
 
