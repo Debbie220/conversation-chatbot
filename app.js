@@ -23,7 +23,7 @@ var bodyParser = require('body-parser');  // parser for post requests
 var watson = require('watson-developer-cloud');  // watson sdk
 
 var app = express();
-
+var role=null;
 // Bootstrap application settings
 app.use(express.static('./public')); // load UI from public folder
 app.use(bodyParser.json());
@@ -36,7 +36,6 @@ var conversation = watson.conversation({
   version_date: '2016-05-19',
   version: 'v1-experimental'
 });
-
 
 
 // Endpoint to be call from the client side
@@ -66,7 +65,7 @@ app.post('/api/message', function(req, res) {
     if (err) {
       return res.status(err.code || 500).json(err);
     }
-    console.log("DATA: ", data);
+    //console.log("DATA: ", data);
     return res.json(updateMessage(data));
   });
 });
@@ -84,10 +83,14 @@ function updateMessage(response) {
       response.output = {};
     }
 
-    //for the equipment rental form
-    if(response.output.variables){
-
+    // if(response.output.role){
+    //   role = response.output.role;
+    // }
+    if(response.context.system.dialog_stack[0] == "root"){
+      console.log("YESY");
+      response.context.system.dialog_stack[0] = "node_5_1467908868729";
     }
+
     // Depending on the confidence of the response the app can return different messages.
     // The confidence will vary depending on how well the system is trained. The service will always try to assign
     // a class/intent to the input. If the confidence is low, then it suggests the service is unsure of the
