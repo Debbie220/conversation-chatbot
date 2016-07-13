@@ -20,7 +20,8 @@ var ConversationPanel = (function() {
   // Publicly accessible methods defined
   return {
     init: init,
-    inputKeyDown: inputKeyDown
+    inputKeyDown: inputKeyDown,
+    buttonClicks: buttonClicks
   };
 
   // Initialize the module
@@ -217,5 +218,23 @@ var ConversationPanel = (function() {
       inputBox.value = '';
       fireEvent(inputBox, 'input');
     }
+  }
+
+  function buttonClicks(buttonId) {
+    var input = document.getElementById(buttonId);
+    // console.log("input.innerText: ", input.innerText);
+    var context;
+    var latestResponse = Api.getResponsePayload();
+    if (latestResponse) {
+      context = latestResponse.context;
+    }
+
+    // Send the user message
+    Api.sendRequest(input.innerText, context);
+    displayMessage(
+      {output:
+        {text: input.innerText}
+      },
+      settings.authorTypes.watson);
   }
 }());
