@@ -10,7 +10,7 @@ var Api = (function() {
     sendRequest: sendRequest,
 
     // The request/response getters/setters are defined here to prevent internal methods
-    // from calling the methods without any of the callbacks that are added elsewhere.
+    // from calling th e methods without any of the callbacks that are added elsewhere.
     getRequestPayload: function() {
       return requestPayload;
     },
@@ -49,6 +49,7 @@ var Api = (function() {
     };
 
     var params = JSON.stringify(payloadToWatson);
+    console.log(JSON.stringify(payloadToWatson));
     // Stored in variable (publicly visible through Api.getRequestPayload)
     // to be used throughout the application
     if (Object.getOwnPropertyNames(payloadToWatson).length !== 0) {
