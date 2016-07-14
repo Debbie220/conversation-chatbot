@@ -64,7 +64,6 @@ app.post('/api/message', function(req, res) {
     if (err) {
       return res.status(err.code || 500).json(err);
     }
-    //console.log("DATA: ", data);
     return res.json(updateMessage(data));
   });
 });
