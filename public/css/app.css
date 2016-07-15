@@ -82,15 +82,17 @@ div {
   padding: 0.9375rem 0 0.625rem 0;
   margin: auto;
   text-align: left;
-  max-width: 25rem;
+  max-width: 35rem;
   min-width: 9.375rem;
 }
 
 #scrollingChat {
+    margin: 2rem;
     float: left;
     width: 100%;
     height: 440px;
     overflow-y: auto;
+    overflow-x: auto;
 }
 #textField {
     float: left;
