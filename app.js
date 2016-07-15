@@ -33,7 +33,7 @@ var conversation = watson.conversation({
   username: process.env.CONVERSATION_USERNAME || '0307ac42-ead5-4ef4-8e46-bd4b4479df6b',
   password: process.env.CONVERSATION_PASSWORD || 'X4KghNix2imI',
   version_date: '2016-05-19',
-  version: 'v1-experimental'
+  version: 'v1'
 });
 
 
@@ -64,6 +64,7 @@ app.post('/api/message', function(req, res) {
     if (err) {
       return res.status(err.code || 500).json(err);
     }
+    //console.log("DATA: ", data);
     return res.json(updateMessage(data));
   });
 });
@@ -80,7 +81,7 @@ function updateMessage(response) {
     if (!response.output) {
       response.output = {};
     }
-    //saving the role as a context variable
+    //saving the role as a conte
     if(response.output.role){
       response.context.role = response.output.role;
     }
