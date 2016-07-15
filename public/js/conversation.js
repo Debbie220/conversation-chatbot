@@ -235,6 +235,6 @@ var ConversationPanel = (function() {
       {output:
         {text: input.innerText}
       },
-      settings.authorTypes.watson);
+      settings.authorTypes.user);
   }
 }());
