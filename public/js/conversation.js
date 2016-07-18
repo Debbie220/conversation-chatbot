@@ -30,7 +30,7 @@ var ConversationPanel = (function() {
     // The client displays the initial message to the end user
     displayMessage(
       {output:
-        {text: 'This Watson app shows how intents work. Try testing some below, using the examples in the app description.'}
+        {text: 'Hi there, Type in anything to start the conversation.'}
       },
       settings.authorTypes.watson);
     setupInputBox();
@@ -219,10 +219,11 @@ var ConversationPanel = (function() {
       fireEvent(inputBox, 'input');
     }
   }
-
+  //This function is used to activate userInput whenever a button is clicked on
+  //it takes the userInput to be the text on the button
   function buttonClicks(buttonId) {
+    //get the button the user clicked on
     var input = document.getElementById(buttonId);
-    // console.log("input.innerText: ", input.innerText);
     var context;
     var latestResponse = Api.getResponsePayload();
     if (latestResponse) {
