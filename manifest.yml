@@ -2,10 +2,10 @@
 declared-services:
   conversation-experimental:
     label: conversation
-    plan: experimental
+    plan: free
 applications:
 - services:
-  - conversation-experimental
+  - Conversation-2e
   command: npm start
   path: .
   instances: 1

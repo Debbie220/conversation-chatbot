@@ -30,8 +30,8 @@ app.use(bodyParser.json());
 // Create the service wrapper
 var conversation = watson.conversation({
   url: 'https://gateway.watsonplatform.net/conversation-experimental/api',
-  username: process.env.CONVERSATION_USERNAME || '0307ac42-ead5-4ef4-8e46-bd4b4479df6b',
-  password: process.env.CONVERSATION_PASSWORD || 'X4KghNix2imI',
+  username: process.env.CONVERSATION_USERNAME || 'ebdcdb0b-5d3c-4f55-b504-96f160188a71',
+  password: process.env.CONVERSATION_PASSWORD || 'TUXK3UUehrHa',
   version_date: '2016-05-19',
   version: 'v1'
 });
@@ -39,7 +39,7 @@ var conversation = watson.conversation({
 
 // Endpoint to be call from the client side
 app.post('/api/message', function(req, res) {
-  var workspace = process.env.WORKSPACE_ID || 'cac5193b-c099-4451-a283-299bbb049542';
+  var workspace = process.env.WORKSPACE_ID || '1a0ef03b-34fb-4463-b78b-a460e13b94b6';
   if (!workspace || workspace === '<workspace-id>') {
     return res.json({'output': {'text': 'The app has not been configured with a <b>WORKSPACE_ID</b> environment variable. Please refer to the ' +
     '<a href="https://github.com/watson-developer-cloud/conversation-simple">README</a> documentation on how to set this variable. <br>' +
