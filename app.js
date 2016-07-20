@@ -29,10 +29,10 @@ app.use(bodyParser.json());
 
 // Create the service wrapper
 var conversation = watson.conversation({
-  url: 'https://gateway.watsonplatform.net/conversation-experimental/api',
+  url: 'https://gateway.watsonplatform.net/conversation/api',
   username: process.env.CONVERSATION_USERNAME || 'ebdcdb0b-5d3c-4f55-b504-96f160188a71',
   password: process.env.CONVERSATION_PASSWORD || 'TUXK3UUehrHa',
-  version_date: '2016-05-19',
+  version_date: '2016-07-11',
   version: 'v1'
 });
 
@@ -62,7 +62,9 @@ app.post('/api/message', function(req, res) {
   // Send the input to the conversation service
   conversation.message(payload, function(err, data) {
     if (err) {
+      console.log(err);
       return res.status(err.code || 500).json(err);
+
     }
     //console.log("DATA: ", data);
     return res.json(updateMessage(data));
