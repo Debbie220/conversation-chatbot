@@ -27,12 +27,13 @@ var ConversationPanel = (function() {
   // Initialize the module
   function init() {
     chatUpdateSetup();
+    Api.sendRequest( '', null );
     // The client displays the initial message to the end user
-    displayMessage(
-      {output:
-        {text: 'Hi there, Type in anything to start the conversation.'}
-      },
-      settings.authorTypes.watson);
+    // displayMessage(
+    //   {output:
+    //     {text: 'Hi there, Type in anything to start the conversation.'}
+    //   },
+    //   settings.authorTypes.watson);
     setupInputBox();
   }
 
