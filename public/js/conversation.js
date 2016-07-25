@@ -125,6 +125,8 @@ var ConversationPanel = (function() {
 
       chatBoxElement.appendChild(messageDiv);
       // Class to start fade in animation
+      console.log("messageDiv: ", messageDiv);
+
       messageDiv.classList.add('load');
       // Move chat to the most recent messages when new messages are added
       scrollToChatBottom();
