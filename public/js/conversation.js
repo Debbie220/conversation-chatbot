@@ -235,10 +235,10 @@ var ConversationPanel = (function() {
 
     // Send the user message
     Api.sendRequest(input.innerText, context);
-    displayMessage(
-      {output:
-        {text: input.innerText}
-      },
-      settings.authorTypes.user);
+    // displayMessage(
+    //   {input:
+    //     {text: input.innerText}
+    //   },
+    //   settings.authorTypes.user);
   }
 }());

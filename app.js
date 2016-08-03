@@ -21,8 +21,12 @@ require('dotenv').config({silent: true});
 var express = require('express');  // app server
 var bodyParser = require('body-parser');  // parser for post requests
 var watson = require('watson-developer-cloud');  // watson sdk
+var fs = require('fs');
+var nodemailer = require('nodemailer');
 
 var app = express();
+var status= null;
+
 // Bootstrap application settings
 app.use(express.static('./public')); // load UI from public folder
 app.use(bodyParser.json());
@@ -53,6 +57,7 @@ app.post('/api/message', function(req, res) {
   if (req.body) {
     if (req.body.input) {
       payload.input = req.body.input;
+      updateChatLog(req.body.input.text, '<b>user</b>');
     }
     if (req.body.context) {
       // The client must maintain context/state
@@ -72,6 +77,59 @@ app.post('/api/message', function(req, res) {
 });
 
 /**
+* It saves the chat messages in a file and sends them to IST
+* once it is done answering a question
+*/
+function updateChatLog(text, user) {
+  console.log("Going to write into existing file");
+  fs.appendFile('chat_log.txt', user+': '+text+"<br>",  function(err) {
+   if (err) {
+       return console.error(err);
+   }
+   //console.log("Data written successfully!");
+   fs.readFile('chat_log.txt', function (err, data) {
+      if (err) {
+         return console.error(err);
+      }
+      //console.log("Asynchronous read: " + data.toString());
+   });
+  });
+}
+
+function fileContent(fileToRead){
+  var dataInfo=null;
+  dataInfo = fs.readFileSync('chat_log.txt','utf8');
+  return dataInfo;
+}
+
+/**
+* if answered or not clear send email and then clear chat log
+*/
+function sendChat(fileToRead){
+  //send email
+  // create reusable transporter object using the default SMTP transport
+  var transporter = nodemailer.createTransport('smtps://istchatbot%40gmail.com:rockmyWorld@smtp.gmail.com');
+  var mailContent = fileContent(fileToRead);
+  // setup e-mail data with unicode symbols
+  var mailOptions = {
+      from: '"Debby Etsenake" <istchatbot@gmail.com>', // sender address
+      to: 'detsenak@ualberta.ca', // list of receivers
+      subject: status, // Subject line
+      html: mailContent // html body
+  };
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, function(error, info){
+      if(error){
+          return console.log(error);
+      }
+      console.log('Message sent: ' + info.response);
+  });
+  //delete all contents of chat log file
+  fs.writeFile(fileToRead,'');
+}
+
+/**
  * Updates the response text using the intent confidence
  * @param  {Object} response The response from the Conversation service
  * @return {Object}          The response with the updated message
@@ -83,16 +141,31 @@ function updateMessage(response) {
     if (!response.output) {
       response.output = {};
     }
-    //saving the role as a conte
+    else{
+      updateChatLog(response.output.text, '<b>watson</b>');
+    }
+    //saving the role as a context variable
     if(response.output.role){
       response.context.role = response.output.role;
     }
 
-    //this will not work if the location of the alternative nodes where the intents are checked for is moved
+    //this will not work if the location of the alternative nodes where the intents are checked is moved
     if(response.context.system.dialog_stack[0] == "root"){
       response.context.system.dialog_stack[0] = "node_5_1467908868729";
     }
-
+    if(response.output.answered){
+      console.log("answered value:   ", response.output.answered);
+      if(response.output.answered == 'yes'){
+        status = "SOLVED";
+        //call function to send email and empty chat log file
+        sendChat('chat_log.txt');
+      }
+      else{
+        status = "UNSOLVED";
+        //call function to send email and empty chat log file
+        sendChat('chat_log.txt');
+      }
+    }
     // Depending on the confidence of the response the app can return different messages.
     // The confidence will vary depending on how well the system is trained. The service will always try to assign
     // a class/intent to the input. If the confidence is low, then it suggests the service is unsure of the
