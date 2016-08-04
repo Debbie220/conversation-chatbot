@@ -43,7 +43,7 @@ var conversation = watson.conversation({
 /*
 * Just for creating the file when the user initially starts chatting
 */
-app.get('/saveFile', function(req, res) {
+app.post('/saveFile', function(req, res) {
   return createFile();
 });
 
@@ -104,7 +104,7 @@ function uniqueid(){
             idstr+=String.fromCharCode(ascicode);
         }
     } while (idstr.length<32);
-    console.log(uniqueid);
+    console.log("TELLME THE FILE OOOOOOOOOOOOOO: ",fileForChatLog);
     return (idstr);
 }
 
@@ -115,18 +115,7 @@ function uniqueid(){
 function updateChatLog(text, user) {
   console.log("Going to write into existing file");
   console.log("FILE PASTHHHHHHHHH: ", fileForChatLog);
-  fs.appendFileSync(fileForChatLog, user+': '+text+"<br>");//,  function(err) {
-  //  if (err) {
-  //      return console.error(err);
-  //  }
-  //  //console.log("Data written successfully!");
-  //  fs.readFile(fileForChatLog, function (err, data) {
-  //     if (err) {
-  //        return console.error(err);
-  //     }
-  //     //console.log("Asynchronous read: " + data.toString());
-  //  });
-  //});
+  fs.appendFileSync(fileForChatLog, user+': '+text+"<br>");
 }
 
 function fileContent(fileToRead){
