@@ -16,7 +16,6 @@ var ConversationPanel = (function() {
       watson: 'watson'
     }
   };
-
   // Publicly accessible methods defined
   return {
     init: init,
@@ -28,12 +27,9 @@ var ConversationPanel = (function() {
   function init() {
     chatUpdateSetup();
     Api.sendRequest( '', null );
-    // The client displays the initial message to the end user
-    // displayMessage(
-    //   {output:
-    //     {text: 'Hi there, Type in anything to start the conversation.'}
-    //   },
-    //   settings.authorTypes.watson);
+    //create the file where logs are stored as conversation starts
+    writeToFile('');
+
     setupInputBox();
   }
 
