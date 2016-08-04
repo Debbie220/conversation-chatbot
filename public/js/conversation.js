@@ -28,7 +28,7 @@ var ConversationPanel = (function() {
     chatUpdateSetup();
     Api.sendRequest( '', null );
     //create the file where logs are stored as conversation starts
-    writeToFile('');
+    createFile('');
 
     setupInputBox();
   }
