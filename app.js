@@ -26,7 +26,7 @@ var nodemailer = require('nodemailer');
 
 var app = express();
 var status= null;
-var fileForChatLog = null;
+var fileForChatLog=null;
 // Bootstrap application settings
 app.use(express.static('./public')); // load UI from public folder
 app.use(bodyParser.json());
@@ -41,14 +41,18 @@ var conversation = watson.conversation({
 });
 
 /*
-* Just for creating the file at first
+* Just for creating the file when the user initially starts chatting
 */
-app.post('/saveFile', function(req, res) {
-  var file_name = "user"+uniqueid();
-  var path= './Chat_logs/'+file_name;
-  fileForChatLog = path;
-  var new_file = fs.writeFileSync(path, '');
+app.get('/saveFile', function(req, res) {
+  return createFile();
 });
+
+function createFile(){
+  var file_name = "user"+uniqueid();
+  var path= "./Chat_logs/"+file_name;
+  fileForChatLog = path;
+  fs.writeFileSync(fileForChatLog, '');
+}
 
 // Endpoint to be call from the client side
 app.post('/api/message', function(req, res) {
@@ -110,18 +114,19 @@ function uniqueid(){
 */
 function updateChatLog(text, user) {
   console.log("Going to write into existing file");
-  fs.appendFile(fileForChatLog, user+': '+text+"<br>",  function(err) {
-   if (err) {
-       return console.error(err);
-   }
-   //console.log("Data written successfully!");
-   fs.readFile(fileForChatLog, function (err, data) {
-      if (err) {
-         return console.error(err);
-      }
-      //console.log("Asynchronous read: " + data.toString());
-   });
-  });
+  console.log("FILE PASTHHHHHHHHH: ", fileForChatLog);
+  fs.appendFileSync(fileForChatLog, user+': '+text+"<br>");//,  function(err) {
+  //  if (err) {
+  //      return console.error(err);
+  //  }
+  //  //console.log("Data written successfully!");
+  //  fs.readFile(fileForChatLog, function (err, data) {
+  //     if (err) {
+  //        return console.error(err);
+  //     }
+  //     //console.log("Asynchronous read: " + data.toString());
+  //  });
+  //});
 }
 
 function fileContent(fileToRead){
@@ -155,10 +160,6 @@ function sendChat(fileToRead){
   });
   //delete all contents of chat log file
   fs.writeFile(fileToRead,'');
-}
-
-var deleteContentsOfFile = function(){
-  fs.writeFile(fileForChatLog, '');
 }
 
 /**
