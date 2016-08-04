@@ -26,7 +26,7 @@ var nodemailer = require('nodemailer');
 
 var app = express();
 var status= null;
-
+var fileForChatLog = null;
 // Bootstrap application settings
 app.use(express.static('./public')); // load UI from public folder
 app.use(bodyParser.json());
@@ -40,6 +40,15 @@ var conversation = watson.conversation({
   version: 'v1'
 });
 
+/*
+* Just for creating the file at first
+*/
+app.post('/saveFile', function(req, res) {
+  var file_name = "user"+uniqueid();
+  var path= './Chat_logs/'+file_name;
+  fileForChatLog = path;
+  var new_file = fs.writeFileSync(path, '');
+});
 
 // Endpoint to be call from the client side
 app.post('/api/message', function(req, res) {
@@ -77,17 +86,36 @@ app.post('/api/message', function(req, res) {
 });
 
 /**
+* Gotten from stackOverflow
+* generates a unique Id
+*/
+function uniqueid(){
+    // always start with a letter (for DOM friendlyness)
+    var idstr=String.fromCharCode(Math.floor((Math.random()*25)+65));
+    do {
+        // between numbers and characters (48 is 0 and 90 is Z (42-48 = 90)
+        var ascicode=Math.floor((Math.random()*42)+48);
+        if (ascicode<58 || ascicode>64){
+            // exclude all chars between : (58) and @ (64)
+            idstr+=String.fromCharCode(ascicode);
+        }
+    } while (idstr.length<32);
+    console.log(uniqueid);
+    return (idstr);
+}
+
+/**
 * It saves the chat messages in a file and sends them to IST
 * once it is done answering a question
 */
 function updateChatLog(text, user) {
   console.log("Going to write into existing file");
-  fs.appendFile('chat_log.txt', user+': '+text+"<br>",  function(err) {
+  fs.appendFile(fileForChatLog, user+': '+text+"<br>",  function(err) {
    if (err) {
        return console.error(err);
    }
    //console.log("Data written successfully!");
-   fs.readFile('chat_log.txt', function (err, data) {
+   fs.readFile(fileForChatLog, function (err, data) {
       if (err) {
          return console.error(err);
       }
@@ -98,7 +126,7 @@ function updateChatLog(text, user) {
 
 function fileContent(fileToRead){
   var dataInfo=null;
-  dataInfo = fs.readFileSync('chat_log.txt','utf8');
+  dataInfo = fs.readFileSync(fileForChatLog,'utf8');
   return dataInfo;
 }
 
@@ -112,7 +140,7 @@ function sendChat(fileToRead){
   var mailContent = fileContent(fileToRead);
   // setup e-mail data with unicode symbols
   var mailOptions = {
-      from: '"Debby Etsenake" <istchatbot@gmail.com>', // sender address
+      from: '"IST ChatBot" <istchatbot@gmail.com>', // sender address
       to: 'detsenak@ualberta.ca', // list of receivers
       subject: status, // Subject line
       html: mailContent // html body
@@ -127,6 +155,10 @@ function sendChat(fileToRead){
   });
   //delete all contents of chat log file
   fs.writeFile(fileToRead,'');
+}
+
+var deleteContentsOfFile = function(){
+  fs.writeFile(fileForChatLog, '');
 }
 
 /**
@@ -158,12 +190,12 @@ function updateMessage(response) {
       if(response.output.answered == 'yes'){
         status = "SOLVED";
         //call function to send email and empty chat log file
-        sendChat('chat_log.txt');
+        sendChat(fileForChatLog);
       }
       else{
         status = "UNSOLVED";
         //call function to send email and empty chat log file
-        sendChat('chat_log.txt');
+        sendChat(fileForChatLog);
       }
     }
     // Depending on the confidence of the response the app can return different messages.
@@ -182,5 +214,4 @@ function updateMessage(response) {
   //response.output.text = responseText;
   return response;
 }
-
 module.exports = app;
