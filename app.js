@@ -55,6 +55,11 @@ function createFile(){
   fileForChatLog = path;
   fs.writeFileSync(fileForChatLog, '');
 }
+app.post('/deleteFile', function(req, res) {
+  fs.unlinkSync(fileForChatLog);
+  console.log('successfully deleted ', fileForChatLog);
+
+});
 
 // Endpoint to be call from the client side
 app.post('/api/message', function(req, res) {
