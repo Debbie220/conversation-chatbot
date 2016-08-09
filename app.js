@@ -193,7 +193,7 @@ function updateMessage(response) {
         //sendChat(fileForChatLog);
       }
     }
-    //because when the variable answered is no, we need to get contact information
+    //because when the variable "answered" is no, we need to get contact information
     if(response.output.sendMessage){
         if(response.output.sendMessage==1 && status=="UNSOLVED"){
           sendChat(fileForChatLog);
