@@ -20,7 +20,8 @@ var ConversationPanel = (function() {
   return {
     init: init,
     inputKeyDown: inputKeyDown,
-    buttonClicks: buttonClicks
+    buttonClicks: buttonClicks,
+    re_init: re_init
   };
 
   // Initialize the module
@@ -29,8 +30,11 @@ var ConversationPanel = (function() {
     Api.sendRequest( '', null );
     //create the file where logs are stored as conversation starts
     createFile('');
-
     setupInputBox();
+  }
+  function re_init(){
+    Api.sendRequest('', null);
+    createFile('');
   }
 
   // Set up callbacks on payload setters in Api module
@@ -49,11 +53,19 @@ var ConversationPanel = (function() {
     };
   }
 
+  // Set up the input box to underline text as it is typed
+  // This is done by creating a hidden dummy version of the input box that
+  // is used to determine what the width of the input text should be.
+  // This value is then used to set the new width of the visible input box.
   function setupInputBox() {
     var input = document.getElementById('textInput');
     var dummy = document.getElementById('textInputDummy');
-    var padding = 3;
+    var minFontSize = 14;
+    var maxFontSize = 16;
+    var minPadding = 4;
+    var maxPadding = 6;
 
+    // If no dummy input box exists, create one
     if (dummy === null) {
       var dummyJson = {
         'tagName': 'div',
@@ -64,28 +76,47 @@ var ConversationPanel = (function() {
       };
 
       dummy = Common.buildDomElement(dummyJson);
-      ['font-size', 'font-style', 'font-weight', 'font-family', 'line-height', 'text-transform', 'letter-spacing'].forEach(function(index) {
-        dummy.style[index] = window.getComputedStyle( input, null ).getPropertyValue( index );
-      });
-
       document.body.appendChild(dummy);
     }
 
-    input.addEventListener('input', function() {
-      if (this.value === '') {
-        this.classList.remove('underline');
-        this.setAttribute('style', 'width:' + '100%');
-        this.style.width = '100%';
+    function adjustInput() {
+      if (input.value === '') {
+        // If the input box is empty, remove the underline
+        input.classList.remove('underline');
+        input.setAttribute('style', 'width:' + '100%');
+        input.style.width = '100%';
       } else {
-        this.classList.add('underline');
-        var txtNode = document.createTextNode(this.value);
+        // otherwise, adjust the dummy text to match, and then set the width of
+        // the visible input box to match it (thus extending the underline)
+        input.classList.add('underline');
+        var txtNode = document.createTextNode(input.value);
+        ['font-size', 'font-style', 'font-weight', 'font-family', 'line-height',
+          'text-transform', 'letter-spacing'].forEach(function(index) {
+            dummy.style[index] = window.getComputedStyle(input, null).getPropertyValue(index);
+          });
         dummy.textContent = txtNode.textContent;
-        var widthValue = ( dummy.offsetWidth + padding) + 'px';
-        this.setAttribute('style', 'width:' + widthValue);
-        this.style.width = widthValue;
-      }
-    });
 
+        var padding = 0;
+        var htmlElem = document.getElementsByTagName('html')[0];
+        var currentFontSize = parseInt(window.getComputedStyle(htmlElem, null).getPropertyValue('font-size'), 10);
+        if (currentFontSize) {
+          padding = Math.floor((currentFontSize - minFontSize) / (maxFontSize - minFontSize)
+            * (maxPadding - minPadding) + minPadding);
+        } else {
+          padding = maxPadding;
+        }
+
+        var widthValue = ( dummy.offsetWidth + padding) + 'px';
+        input.setAttribute('style', 'width:' + widthValue);
+        input.style.width = widthValue;
+      }
+    }
+
+    // Any time the input changes, or the window resizes, adjust the size of the input box
+    input.addEventListener('input', adjustInput);
+    window.addEventListener('resize', adjustInput);
+
+    // Trigger the input event once to set up the input box and dummy element
     fireEvent(input, 'input');
   }
 
@@ -109,21 +140,23 @@ var ConversationPanel = (function() {
       || (newPayload.output && newPayload.output.text);
     if (isUser !== null && textExists) {
       // Create new message DOM element
-      var messageDiv = buildMessageDomElement(newPayload, isUser);
+      var messageDivs = buildMessageDomElements(newPayload, isUser);
       var chatBoxElement = document.querySelector(settings.selectors.chatBox);
-      var previousLatest = chatBoxElement.querySelector((isUser
+      var previousLatest = chatBoxElement.querySelectorAll((isUser
               ? settings.selectors.fromUser : settings.selectors.fromWatson)
               + settings.selectors.latest);
       // Previous "latest" message is no longer the most recent
       if (previousLatest) {
-        previousLatest.classList.remove('latest');
+        Common.listForEach(previousLatest, function(element) {
+          element.classList.remove('latest');
+        });
       }
 
-      chatBoxElement.appendChild(messageDiv);
-      // Class to start fade in animation
-      console.log("messageDiv: ", messageDiv);
-
-      messageDiv.classList.add('load');
+      messageDivs.forEach(function(currentDiv) {
+        chatBoxElement.appendChild(currentDiv);
+        // Class to start fade in animation
+        currentDiv.classList.add('load');
+      });
       // Move chat to the most recent messages when new messages are added
       scrollToChatBottom();
     }
@@ -142,31 +175,40 @@ var ConversationPanel = (function() {
   }
 
   // Constructs new DOM element from a message payload
-  function buildMessageDomElement(newPayload, isUser) {
-    var dataObj = isUser ? newPayload.input : newPayload.output;
+  function buildMessageDomElements(newPayload, isUser) {
+    var textArray = isUser ? newPayload.input.text : newPayload.output.text;
+    if (Object.prototype.toString.call( textArray ) !== '[object Array]') {
+      textArray = [textArray];
+    }
+    var messageArray = [];
 
-    var messageJson = {
-      // <div class='segments'>
-      'tagName': 'div',
-      'classNames': ['segments'],
-      'children': [{
-        // <div class='from-user/from-watson latest'>
-        'tagName': 'div',
-        'classNames': [(isUser ? 'from-user' : 'from-watson'), 'latest'],
-        'children': [{
-          // <div class='message-inner'>
+    textArray.forEach(function(currentText) {
+      if (currentText) {
+        var messageJson = {
+          // <div class='segments'>
           'tagName': 'div',
-          'classNames': ['message-inner'],
+          'classNames': ['segments'],
           'children': [{
-            // <p>{messageText}</p>
-            'tagName': 'p',
-            'text': dataObj.text
+            // <div class='from-user/from-watson latest'>
+            'tagName': 'div',
+            'classNames': [(isUser ? 'from-user' : 'from-watson'), 'latest', ((messageArray.length === 0) ? 'top' : 'sub')],
+            'children': [{
+              // <div class='message-inner'>
+              'tagName': 'div',
+              'classNames': ['message-inner'],
+              'children': [{
+                // <p>{messageText}</p>
+                'tagName': 'p',
+                'text': currentText
+              }]
+            }]
           }]
-        }]
-      }]
-    };
+        };
+        messageArray.push(Common.buildDomElement(messageJson));
+      }
+    });
 
-    return Common.buildDomElement(messageJson);
+    return messageArray;
   }
 
   // Scroll to the bottom of the chat window (to the most recent messages)
@@ -231,10 +273,5 @@ var ConversationPanel = (function() {
 
     // Send the user message
     Api.sendRequest(input.innerText, context);
-    // displayMessage(
-    //   {input:
-    //     {text: input.innerText}
-    //   },
-    //   settings.authorTypes.user);
   }
 }());
