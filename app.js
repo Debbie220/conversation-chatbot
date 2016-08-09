@@ -27,6 +27,7 @@ var nodemailer = require('nodemailer');
 var app = express();
 var status= null;
 var fileForChatLog=null;
+
 // Bootstrap application settings
 app.use(express.static('./public')); // load UI from public folder
 app.use(bodyParser.json());
@@ -42,6 +43,7 @@ var conversation = watson.conversation({
 
 /*
 * Just for creating the file when the user initially starts chatting
+* I know, it's weird
 */
 app.post('/saveFile', function(req, res) {
   return createFile();
@@ -84,7 +86,6 @@ app.post('/api/message', function(req, res) {
       return res.status(err.code || 500).json(err);
 
     }
-    //console.log("DATA: ", data);
     return res.json(updateMessage(data));
   });
 });
@@ -104,7 +105,6 @@ function uniqueid(){
             idstr+=String.fromCharCode(ascicode);
         }
     } while (idstr.length<32);
-    console.log("TELLME THE FILE OOOOOOOOOOOOOO: ",fileForChatLog);
     return (idstr);
 }
 
@@ -113,8 +113,7 @@ function uniqueid(){
 * once it is done answering a question
 */
 function updateChatLog(text, user) {
-  console.log("Going to write into existing file");
-  console.log("FILE PASTHHHHHHHHH: ", fileForChatLog);
+  // console.log("Going to write into existing file");
   fs.appendFileSync(fileForChatLog, user+': '+text+"<br>");
 }
 
@@ -145,11 +144,13 @@ function sendChat(fileToRead){
       if(error){
           return console.log(error);
       }
-      console.log('Message sent: ' + info.response);
   });
   //delete all contents of chat log file
   fs.writeFile(fileToRead,'');
 }
+
+
+
 
 /**
  * Updates the response text using the intent confidence
@@ -171,12 +172,11 @@ function updateMessage(response) {
       response.context.role = response.output.role;
     }
 
-    //this will not work if the location of the alternative nodes where the intents are checked is moved
+    //this will not work if the location of the alternative nodes where the main intents are checked is moved
     if(response.context.system.dialog_stack[0] == "root"){
       response.context.system.dialog_stack[0] = "node_5_1467908868729";
     }
     if(response.output.answered){
-      console.log("answered value:   ", response.output.answered);
       if(response.output.answered == 'yes'){
         status = "SOLVED";
         //call function to send email and empty chat log file
@@ -185,8 +185,14 @@ function updateMessage(response) {
       else{
         status = "UNSOLVED";
         //call function to send email and empty chat log file
-        sendChat(fileForChatLog);
+        //sendChat(fileForChatLog);
       }
+    }
+    //because when the variable answered is no, we need to get contact information
+    if(response.output.sendMessage){
+        if(response.output.sendMessage==1 && status=="UNSOLVED"){
+          sendChat(fileForChatLog);
+        }
     }
     // Depending on the confidence of the response the app can return different messages.
     // The confidence will vary depending on how well the system is trained. The service will always try to assign
