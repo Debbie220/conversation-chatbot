@@ -31,10 +31,12 @@ var ConversationPanel = (function() {
     //create the file where logs are stored as conversation starts
     createFile('');
     setupInputBox();
+    checkNumberOfChatColumns();
   }
   function re_init(){
     Api.sendRequest('', null);
     createFile('');
+    checkNumberOfChatColumns();
   }
 
   // Set up callbacks on payload setters in Api module
@@ -254,10 +256,12 @@ var ConversationPanel = (function() {
 
       // Send the user message
       Api.sendRequest(inputBox.value, context);
+      //call function to check number of sections in chat column here
 
       // Clear input box for further messages
       inputBox.value = '';
       fireEvent(inputBox, 'input');
+      checkNumberOfChatColumns();
     }
   }
   //This function is used to activate userInput whenever a button is clicked on
@@ -270,8 +274,10 @@ var ConversationPanel = (function() {
     if (latestResponse) {
       context = latestResponse.context;
     }
+    //call function to check number of sections in chat column here
 
     // Send the user message
     Api.sendRequest(input.innerText, context);
+    checkNumberOfChatColumns();
   }
 }());
