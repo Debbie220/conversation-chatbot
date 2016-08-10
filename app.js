@@ -186,6 +186,7 @@ function updateMessage(response) {
         status = "SOLVED";
         //call function to send email and empty chat log file
         sendChat(fileForChatLog);
+        response.output.re_init = 1;
       }
       else{
         status = "UNSOLVED";
@@ -197,6 +198,7 @@ function updateMessage(response) {
     if(response.output.sendMessage){
         if(response.output.sendMessage==1 && status=="UNSOLVED"){
           sendChat(fileForChatLog);
+          response.output.re_init = 1;
         }
     }
     // Depending on the confidence of the response the app can return different messages.

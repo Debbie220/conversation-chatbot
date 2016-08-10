@@ -37,6 +37,14 @@ var Api = (function() {
         console.log("DIALOG STACCKKSKSKKSKSKKSKSKKSKSKKSKSKKSKSKKS: ", dialogStack);
         dialogStack.push(payload.context.system.dialog_stack[0]);
       //}
+    },
+    clearDialogStack: function(){
+      dialogStack.length = 0;
+    },
+    re_initializing: function(payload){
+      if(payload.output.re_init){
+        $('#start_over').trigger('click');
+      }
     }
   };
 
@@ -63,6 +71,8 @@ var Api = (function() {
         console.log("Response Text: ", http.responseText);
         Api.setResponsePayload(http.responseText);
         Api.addOnDialogStack(JSON.parse(http.responseText));
+        //re-initialzing chat if chat-log has been sent
+        Api.re_initializing(JSON.parse(http.responseText));
       }
     };
 
