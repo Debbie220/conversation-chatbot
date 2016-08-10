@@ -3,7 +3,7 @@
 var Api = (function() {
   var requestPayload;
   var responsePayload;
-  var dialogStack = new Array("root");
+  var dialogStack = new Array();
   var messageEndpoint = '/api/message';
 
   // Publicly accessible methods defined
@@ -27,14 +27,15 @@ var Api = (function() {
     removeFromDialogStack: function() {
       dialogStack.pop();
     },
-    fixContextAfterGoingBack: function(requestPayload) {
-      //console.log("requestPayload; ", requestPayload);
-      requestPayload.context.system.dialog_stack[0] = dialogStack[dialogStack.length-1];
-      return requestPayload.context;
+    fixContextAfterGoingBack: function() {
+      //console.log("responsePayload; ", responsePayload);
+      responsePayload.context.system.dialog_stack[0] = dialogStack[dialogStack.length-1];
+      //return responsePayload;
     },
+    //stacking up the node of each response payload
     addOnDialogStack: function(payload) {
         console.log("DIALOG STACCKKSKSKKSKSKKSKSKKSKSKKSKSKKSKSKKS: ", dialogStack);
-        dialogStack.push(payload.system.dialog_stack[0]);
+        dialogStack.push(payload.context.system.dialog_stack[0]);
       //}
     }
   };
@@ -50,7 +51,7 @@ var Api = (function() {
     }
     if (context) {
       payloadToWatson.context = context;
-      Api.addOnDialogStack(context);
+
     }
 
     // Built http request
@@ -61,6 +62,7 @@ var Api = (function() {
       if (http.readyState === 4 && http.status === 200 && http.responseText) {
         console.log("Response Text: ", http.responseText);
         Api.setResponsePayload(http.responseText);
+        Api.addOnDialogStack(JSON.parse(http.responseText));
       }
     };
 

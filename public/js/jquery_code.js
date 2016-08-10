@@ -11,7 +11,6 @@ $(document).ready(function() {
 
 
     $('#previous_menu').click(function() {
-      //alert("hello");
       $(".from-watson .latest").removeClass('latest');
       $(".from-user .latest").removeClass('latest');
       //removing both the latest input field and the latest watson response
@@ -20,19 +19,22 @@ $(document).ready(function() {
       $(".from-watson").last().addClass('latest');
       $(".from-user").last().addClass('latest');
 
-      $(".from-watson .latest").removeClass('latest');
-      $(".from-user .latest").removeClass('latest');
-      //removing both the latest input field and the latest watson response
-      $("#scrollingChat").children().last().remove();
-      var latest_user_response = $("#scrollingChat").children().last();
-      $("#scrollingChat").children().last().remove();
-      $(".from-watson").last().addClass('latest');
-      $(".from-user").last().addClass('latest');
+      // $(".from-watson .latest").removeClass('latest');
+      // $(".from-user .latest").removeClass('latest');
+      // //removing both the latest input field and the latest watson response
+      // $("#scrollingChat").children().last().remove();
+      // var latest_user_response = $("#scrollingChat").children().last();
+      // $("#scrollingChat").children().last().remove();
+      // $(".from-watson").last().addClass('latest');
+      // $(".from-user").last().addClass('latest');
 
       Api.removeFromDialogStack();
-      var payload = Api.getRequestPayload();
-      var context = Api.fixContextAfterGoingBack(payload);
-      Api.sendRequest(latest_user_response.text(), context)
+      Api.fixContextAfterGoingBack();
+
+      //var payload = Api.getResponsePayload();
+      //var context = Api.fixContextAfterGoingBack(payload);
+      //Api.setResponsePayload(context);
+      // Api.sendRequest(latest_user_response.text(), context)
 
     });
 
