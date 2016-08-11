@@ -28,6 +28,7 @@ $(document).ready(function() {
 
       Api.removeFromDialogStack();
       Api.fixContextAfterGoingBack();
+      editFile();
     });
 
     $('#start_over').click(function() {

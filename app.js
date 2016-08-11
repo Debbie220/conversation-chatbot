@@ -61,6 +61,18 @@ app.post('/deleteFile', function(req, res) {
 
 });
 
+app.post('/editFile', function(req, res) {
+  var contents = fs.readFileSync(fileForChatLog).toString();
+  var parts = contents.split("<br>");
+  console.log("PARTS: ", parts);
+  //removing both most recent user entry and watson entry
+  parts = parts.slice(0, parts.length-3);
+  var updated = parts.join("<br>");
+  fs.writeFileSync(fileForChatLog, updated);
+  console.log("PARTS: ", updated);
+
+});
+
 // Endpoint to be call from the client side
 app.post('/api/message', function(req, res) {
   var workspace = process.env.WORKSPACE_ID || '1a0ef03b-34fb-4463-b78b-a460e13b94b6';
