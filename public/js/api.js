@@ -27,16 +27,18 @@ var Api = (function() {
     removeFromDialogStack: function() {
       dialogStack.pop();
     },
+    /*
+    * This function is for changing the number on the dialog stack
+    * when the chatbot has to be reverted to an previous state.
+    */
     fixContextAfterGoingBack: function() {
-      //console.log("responsePayload; ", responsePayload);
       responsePayload.context.system.dialog_stack[0] = dialogStack[dialogStack.length-1];
-      //return responsePayload;
     },
-    //stacking up the node of each response payload
+    /*
+    * It stacks up all the nodes that have been visited during the conversation
+    */
     addOnDialogStack: function(payload) {
-        console.log("DIALOG STACCKKSKSKKSKSKKSKSKKSKSKKSKSKKSKSKKS: ", dialogStack);
         dialogStack.push(payload.context.system.dialog_stack[0]);
-      //}
     },
     clearDialogStack: function(){
       dialogStack.length = 0;
@@ -71,7 +73,7 @@ var Api = (function() {
         console.log("Response Text: ", http.responseText);
         Api.setResponsePayload(http.responseText);
         Api.addOnDialogStack(JSON.parse(http.responseText));
-        //re-initialzing chat if chat-log has been sent
+        //re-initialzing chat if chat_log has been sent
         Api.re_initializing(JSON.parse(http.responseText));
       }
     };

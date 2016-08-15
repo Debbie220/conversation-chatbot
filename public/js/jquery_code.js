@@ -17,6 +17,14 @@ $(document).ready(function() {
         $("body").toggleClass("down", (fromTop > 50));
     });
 
+    var $fixed = $("#fixed"),
+        $clone_2 = $fixed.before($fixed.clone().addClass("clone"));
+
+    // $(window).on("scroll", function() {
+    //     var fromTop = $(window).scrollTop();
+    //     $("body").toggleClass("down", (fromTop > 50));
+    // });
+
     $('#previous_menu').click(function() {
       $(".from-watson .latest").removeClass('latest');
       $(".from-user .latest").removeClass('latest');
@@ -29,6 +37,7 @@ $(document).ready(function() {
       Api.removeFromDialogStack();
       Api.fixContextAfterGoingBack();
       editFile();
+      checkNumberOfChatColumns();
     });
 
     $('#start_over').click(function() {

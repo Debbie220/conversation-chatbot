@@ -30,6 +30,11 @@ div {
     transition:0.4s top cubic-bezier(.3,.73,.3,.74);
 }
 
+#fixed.clone {
+  position:fixed;
+
+}
+
 body.down #header.clone {
     top:0;
 }

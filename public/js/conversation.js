@@ -33,6 +33,7 @@ var ConversationPanel = (function() {
     setupInputBox();
     checkNumberOfChatColumns();
   }
+  //re_initializing the module when the user decides to restart the chat
   function re_init(){
     Api.sendRequest('', null);
     createFile('');
