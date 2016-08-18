@@ -47,12 +47,9 @@ var Api = (function() {
       if(payload.output.re_init){
         Api.clearDialogStack();
         var newFirst = $('#scrollingChat').children().last().detach();
-        //var newfirst = $("#scrollingChat .from-watson").detach();
         $('#scrollingChat').empty().append(newFirst);
-        // setTimeout(fade_out, 4000);
-        // function fade_out() {
-        //   $('#start_over').trigger('click');
-        // }
+        checkNumberOfChatColumns();
+        window.scrollTo(0,0);
       }
     }
   };
