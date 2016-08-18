@@ -45,7 +45,14 @@ var Api = (function() {
     },
     re_initializing: function(payload){
       if(payload.output.re_init){
-        $('#start_over').trigger('click');
+        Api.clearDialogStack();
+        var newFirst = $('#scrollingChat').children().last().detach();
+        //var newfirst = $("#scrollingChat .from-watson").detach();
+        $('#scrollingChat').empty().append(newFirst);
+        // setTimeout(fade_out, 4000);
+        // function fade_out() {
+        //   $('#start_over').trigger('click');
+        // }
       }
     }
   };
