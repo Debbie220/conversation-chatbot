@@ -39,6 +39,13 @@ body.down #header.clone {
     top:0;
 }
 
+.footer {
+  position: relative;
+  bottom: 0;
+  width: 90%;
+  height: 60px;
+}
+
 #view-change-button {
   display: inline-block;
   position: absolute;
@@ -102,11 +109,11 @@ body.down #header.clone {
    min-height: 100%;
 }
 .chat-column {
-  height: 80%;
+  height: 100%;
   padding: 0.9375rem 0 0.625rem 0;
   margin: auto;
   text-align: left;
-  max-width: 35rem;
+  max-width: 25rem;
   min-width: 9.375rem;
 }
 
@@ -254,7 +261,7 @@ body.down #header.clone {
 }
 
 #textInput.underline {
-  border-bottom: 0.125rem solid #00B4A0;
+  border-bottom: 2px solid #00B4A0;
 }
 
 ::-webkit-input-placeholder {
