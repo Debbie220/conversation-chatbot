@@ -253,11 +253,15 @@ var ConversationPanel = (function() {
       var latestResponse = Api.getResponsePayload();
       if (latestResponse) {
         context = latestResponse.context;
+        if(latestResponse.context.endOfWatsonResponse){
+          delete Api.getResponsePayload().context.endOfWatsonResponse;
+          Api.sendMessage(inputBox.value, context);
+        }
+        else{
+          // Send the user message
+          Api.sendRequest(inputBox.value, context);
+        }
       }
-
-      // Send the user message
-      Api.sendRequest(inputBox.value, context);
-      //call function to check number of sections in chat column here
 
       // Clear input box for further messages
       inputBox.value = '';
@@ -274,11 +278,19 @@ var ConversationPanel = (function() {
     var latestResponse = Api.getResponsePayload();
     if (latestResponse) {
       context = latestResponse.context;
+      if(latestResponse.context.endOfWatsonResponse){
+        delete Api.getResponsePayload().context.endOfWatsonResponse;
+        Api.sendMessage(input.innerText, context);
+      }
+      else{
+        // Send the user message
+        Api.sendRequest(input.innerText, context);
+      }
     }
     //call function to check number of sections in chat column here
 
     // Send the user message
-    Api.sendRequest(input.innerText, context);
+    //Api.sendRequest(input.innerText, context);
     checkNumberOfChatColumns();
   }
 }());

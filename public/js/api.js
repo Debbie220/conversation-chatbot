@@ -10,6 +10,7 @@ var Api = (function() {
   return {
     sendRequest: sendRequest,
     dialogStack: dialogStack,
+    sendMessage: sendMessage,
     // The request/response getters/setters are defined here to prevent internal methods
     // from calling th e methods without any of the callbacks that are added elsewhere.
     getRequestPayload: function() {
@@ -23,6 +24,10 @@ var Api = (function() {
     },
     setResponsePayload: function(newPayloadStr) {
       responsePayload = JSON.parse(newPayloadStr);
+    },
+    modifyResponseText: function(new_text) {
+      responsePayload.output.text= new_text;
+      return JSON.stringify(responsePayload);
     },
     removeFromDialogStack: function() {
       dialogStack.pop();
@@ -54,6 +59,42 @@ var Api = (function() {
     }
   };
 
+  function sendMessage(text, context){
+    // Build request payload
+    var payloadToWatson = {};
+    if (text) {
+      payloadToWatson.input = {
+        text: text
+      };
+    }
+    if (context) {
+      payloadToWatson.context = context;
+
+    }
+
+    // Built http request
+    var http = new XMLHttpRequest();
+    http.open('post', '/server/message', true);
+    http.setRequestHeader('Content-type', 'application/json');
+    http.onreadystatechange = function() {
+      if (http.readyState === 4 && http.status === 200 && http.responseText) {
+        //console.log("Response Text: ", http.responseText);
+        var new_payload = Api.modifyResponseText(JSON.parse(http.responseText).output.text);
+        Api.setResponsePayload(new_payload);
+        console.log("NEW PAYLOAD: ", new_payload);
+        //re-initialzing chat if chat_log has been sent
+        Api.re_initializing(JSON.parse(http.responseText));
+        Api.deleteAttributeOffResponsePayload(JSON.parse(new_payload).output.re_init);
+      }
+    };
+
+    var params = JSON.stringify(payloadToWatson);
+    //console.log("PARAMS SENT TO WATSON: ", params);
+    // Send request
+    http.send(params);
+
+  }
+
   // Send a message request to the server
   function sendRequest(text, context) {
     // Build request payload
@@ -74,7 +115,7 @@ var Api = (function() {
     http.setRequestHeader('Content-type', 'application/json');
     http.onreadystatechange = function() {
       if (http.readyState === 4 && http.status === 200 && http.responseText) {
-        console.log("Response Text: ", http.responseText);
+        //console.log("Response Text: ", http.responseText);
         Api.setResponsePayload(http.responseText);
         Api.addOnDialogStack(JSON.parse(http.responseText));
         //re-initialzing chat if chat_log has been sent
