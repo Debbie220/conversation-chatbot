@@ -42,8 +42,7 @@ var conversation = watson.conversation({
 });
 
 /*
-* Just for creating the file when the user initially starts chatting
-* I know, it's weird
+* Just for creating the file to store the chat_log when the user initialises the chat
 */
 app.post('/saveFile', function(req, res) {
   return createFile();
@@ -60,17 +59,41 @@ app.post('/deleteFile', function(req, res) {
   console.log('successfully deleted ', fileForChatLog);
 
 });
-
+//for editing the chat_log file when the user changes the state of the chat
+//by going back to the previous state
 app.post('/editFile', function(req, res) {
   var contents = fs.readFileSync(fileForChatLog).toString();
   var parts = contents.split("<br>");
-  console.log("PARTS: ", parts);
+  //console.log("PARTS: ", parts);
   //removing both most recent user entry and watson entry
   parts = parts.slice(0, parts.length-3);
   var updated = parts.join("<br>");
   fs.writeFileSync(fileForChatLog, updated);
-  console.log("PARTS: ", updated);
+  //console.log("PARTS: ", updated);
 
+});
+
+app.post('/server/message', function(req, res)  {
+  var payload = {
+    context: {}
+  };
+
+  if (req.body) {
+    if (req.body.input) {
+      payload.input = req.body.input;
+      updateChatLog(req.body.input.text, '<b>user</b>');
+    }
+    if (req.body.context) {
+      // The client must maintain context/state
+      payload.context = req.body.context;
+    }
+    payload.output = {
+      text: "Thank you for your co-operation. I will pass on your request to another agent immediately. Any other question?",
+      re_init: 1
+    };
+    sendChat(fileForChatLog);
+    return res.json(payload);
+  }
 });
 
 // Endpoint to be call from the client side
@@ -109,7 +132,8 @@ app.post('/api/message', function(req, res) {
 
 /**
 * Gotten from stackOverflow
-* generates a unique Id
+* generates a unique user_id
+* chances of getting the same id for two different users is unlikely
 */
 function uniqueid(){
     // always start with a letter (for DOM friendlyness)
@@ -141,7 +165,7 @@ function fileContent(fileToRead){
 }
 
 /**
-* if answered or not clear send email and then clear chat log
+* if answered or unanswered send email and then clear chat log
 */
 function sendChat(fileToRead){
   //send email
@@ -188,7 +212,9 @@ function updateMessage(response) {
     if(response.output.role){
       response.context.role = response.output.role;
     }
-
+    if(response.output.endOfWatsonResponse){
+      response.context.endOfWatsonResponse = response.output.endOfWatsonResponse;
+    }
     //this will not work if the location of the alternative nodes where the main intents are checked is moved
     if(response.context.system.dialog_stack[0] == "root"){
       response.context.system.dialog_stack[0] = "node_5_1467908868729";
@@ -206,13 +232,7 @@ function updateMessage(response) {
         //sendChat(fileForChatLog);
       }
     }
-    //because when the variable "answered" is no, we need to get contact information
-    if(response.output.sendMessage){
-        if(response.output.sendMessage==1 && status=="UNSOLVED"){
-          sendChat(fileForChatLog);
-          response.output.re_init = 1;
-        }
-    }
+
     // Depending on the confidence of the response the app can return different messages.
     // The confidence will vary depending on how well the system is trained. The service will always try to assign
     // a class/intent to the input. If the confidence is low, then it suggests the service is unsure of the
