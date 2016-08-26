@@ -5,7 +5,7 @@
 }
 
 body {
-  font-family: Helvetica Neue for IBM, Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-family: Arial, Helvetica Neue for IBM, Helvetica Neue, Helvetica, sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -15,10 +15,30 @@ div {
   line-height: 1.25rem;
 }
 
+a, a:hover {
+  color: #007C41;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open>.dropdown-toggle.btn-primary  {
+  color: #404545;
+  background-color: #FFDB05;
+  border-color: #285e8e; /*set the color you want here*/
+}
+.btn-success, .btn-primary{
+    color: #fff;
+    background-color: #007C41;
+    border-color: #357ebd; /*set the color you want here*/
+}
+.btn-success:hover, .btn-success:focus, .btn-success:active, .btn-success.active, .open>.dropdown-toggle.btn-success  {
+  color: #404545;
+  background-color: #FFDB05;
+  border-color: #285e8e; /*set the color you want here*/
+}
+
 #header {
     position: relative;
     width: 100%;
-    height: 60px;
+    height: 80px;
     background: #eee;
 }
 #header.clone {
@@ -109,7 +129,7 @@ body.down #header.clone {
    min-height: 100%;
 }
 .chat-column {
-  height: 100%;
+  height: 80%;
   padding: 0.9375rem 0 0.625rem 0;
   margin: auto;
   text-align: left;
@@ -119,6 +139,7 @@ body.down #header.clone {
 
 #scrollingChat {
     margin: 1rem;
+    margin-top: 9rem;
     float: left;
     width: 90%;
     height: 440px;
@@ -256,7 +277,7 @@ body.down #header.clone {
   max-width: 100%;
   padding-left: 0.125rem;
   margin-bottom: -0.125rem;
-  font-family: Helvetica Neue for IBM, Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-family: Arial, Helvetica Neue for IBM, Helvetica Neue, Helvetica, sans-serif;
 
 }
 
@@ -322,7 +343,7 @@ input:-moz-placeholder {
 }
 
 #payload-column .header-text, #payload-column #payload-initial-message {
-  font-family: Helvetica Neue for IBM, Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-family: Arial, Helvetica Neue for IBM, Helvetica Neue, Helvetica, sans-serif;
   font-size: 1.125rem;
   color: #9E9E9E;
   letter-spacing: 0.01875rem;
