@@ -287,10 +287,8 @@ var ConversationPanel = (function() {
         Api.sendRequest(input.innerText, context);
       }
     }
-    //call function to check number of sections in chat column here
-
-    // Send the user message
-    //Api.sendRequest(input.innerText, context);
+    
+    scrollToChatBottom();
     checkNumberOfChatColumns();
   }
 }());
