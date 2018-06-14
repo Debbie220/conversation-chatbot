@@ -195,7 +195,7 @@ body.down #header.clone {
   color: #fff;
   letter-spacing: 0.015rem;
   line-height: 1.3125rem;
-  background: #00B4A0;
+  background: #82786F;
   border-radius: 1.25rem;
   border-bottom-right-radius: 0;
   text-align: left;
@@ -252,7 +252,7 @@ body.down #header.clone {
   padding: 0 1.25rem;
 }
 
-.from-watson.latest p:before {
+/*.from-watson.latest p:before {
   content: ".";
   color: #9855D4;
   background-image: url("../img/marker_image.png");
@@ -263,6 +263,21 @@ body.down #header.clone {
   width: 0.3125rem;
   height: 1.3125rem;
   line-height: 1.3125rem;
+}*/
+
+.from-watson.latest p:before {
+    content: " ";
+    position: absolute;
+    height: 1.3125rem;
+    width: 0.3125rem;
+    display: inline-block;
+    left: 0px;
+    top: 0px;
+    /*background-image: url("../img/watson-logo.png");*/
+    background-repeat: no-repeat;
+    background-size: 0.3125rem 1.3125rem;
+    background-position: center center;
+    background-color: #82786F;
 }
 
 #textInput {
